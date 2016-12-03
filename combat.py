@@ -6,7 +6,9 @@ __copyright__ = "Copyright 2016, Rex Allison"
 __license__ = "MIT"
 
 from atari import *
+from Graph import *
 import math 
+# from sklearn import svm
 
 MOVE_UPDATE_RATE = 5
 
@@ -40,6 +42,81 @@ fire1_y = SCREEN_Y/2
 
 move_table_x = [2,2,2,1,0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2]
 move_table_y = [0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2,2,2,2,1]
+
+############################################################################
+
+def createGraph():
+    graph = GridWithWeights(150,88)
+    graph.walls = []
+    
+
+graph = createGraph()
+
+############################################################################
+blue_went_last= True
+red_moves = ['left0','right0','up0','fire0']
+blue_moves = ['left1','right1','up1','fire1']
+red_states={}
+last_shot=[tank0_x,tank0_y,tank0_angle,tank1_x,tank1_y]
+shot_dist = 1000
+global index
+index=0
+
+# xx=[]
+# yy=[]
+# ff = open("data2b.txt")
+# for line in ff:
+#     tmplist= line.split()
+#     yy.append(int(tmplist[5]))
+#     xx.append(map(int,tmplist[0:5]))
+# clf =svm.SVR()
+# clf.fit(xx, yy)
+
+
+
+def dist(x,y,x2,y2):
+    return int(math.sqrt( math.pow(x2-x,2)+math.pow(y2-y,2) ))
+
+
+def get_next_red_move():
+    #implementing try and fail
+    #keep track of state, what action we did, the reward we got. State is location right now. 
+    #reward is +10 for closer 0 for farther, -10 for exact same post and look direction (hit a wall)
+    #have AI shoot after every turn? legit just make it run into you and shoot your ass
+    global index
+    # global clf
+    # israndom = random.randint(0,10)
+    index = random.randint(0,3)
+
+    # if index ==3 and fire0_busy>0:
+    #     index =2
+
+    # if fire0_busy<1 and clf.predict([[tank0_x,tank0_y,tank0_angle,tank1_x,tank1_y]]) <85:
+    #     index =3
+    # else:
+    #     index = random.randint(0,2)
+    
+    # tmp = (tank0_x,tank0_y,tank0_angle,index)
+
+    # if israndom<5:
+    #     if tmp in red_states:
+    #         if red_states[tmp]<0:
+    #             return get_next_red_move()
+    # else:
+    #     return red_moves[index]
+    
+        
+
+
+    return red_moves[index]
+
+
+
+def get_next_blue_move():
+    blue_index=random.randint(0,3)
+    return blue_moves[blue_index]
+############################################################################
+
 
 # ; Table of color combinations.  Each 4 byte entry specifies
 # ; Player 0, Player1, Playfield, and Background colors.
@@ -144,6 +221,8 @@ while move != 'quit':
 
     # Game code starts here
 
+    
+
     # update graphics here
 
     if move == 'left0':
@@ -164,6 +243,8 @@ while move != 'quit':
             fire0_y = tank0_y + 4
             fire0_angle = tank0_angle
             fire0_busy = 50
+            last_shot=[tank0_x,tank0_y,tank0_angle,tank1_x,tank0_y,tank1_angle]
+            shot_dist = 1000
 
             
 
@@ -198,6 +279,7 @@ while move != 'quit':
     if tank1_hit > 0:
         tank1_hit -= 1
         tank1_angle += 1
+        shot_dist=0
 
 
 
@@ -230,6 +312,10 @@ while move != 'quit':
         fire0_x += move_table_x[fire0_angle]
         fire0_y += move_table_y[fire0_angle]
         missile0(screen, fire0_x + 4, fire0_y + 4, 1, 1, colors_hex[color_p0])
+        shot_dist = min(shot_dist,dist(tank1_x,tank1_y,fire0_x,fire0_y))
+        if fire0_busy <1:
+            with open("data.txt", "a") as myfile:
+                myfile.write(str(last_shot[0])+" "+str(last_shot[1])+" "+str(last_shot[2])+" "+str(last_shot[3])+" "+str(last_shot[4])+" "+str(shot_dist)+"\n")
 
     if fire1_busy > 0 and tank0_hit == 0:
         fire1_busy -= 1
@@ -254,7 +340,29 @@ while move != 'quit':
     number(screen, 10, 2, score0, colors_hex[color_p0])
     number(screen, 30, 2, score1, colors_hex[color_p1])
 
-    move = update_switches()
+
+
+
+
+#######
+    # tmp = (tank0_x,tank0_y,tank0_angle,index)
+    # tmp = str(tank0_x)+str(tank0_y)+str(tank0_angle)+str(index)
+
+    # red_states[tmp]=get_reward()
+    # print "tank0_x: " +str(tank0_x)+" tank0_y: " +str(tank0_y)+" tank0_angle: "+str(tank0_angle)+"  index: "+str(index)+ " reward: "+ str(red_states[tmp])
+    # print red_states
+    # last_red_state=[tank0_x,tank0_y,tank0_angle]
+
+
+    if blue_went_last:
+        move = update_switches(get_next_red_move())
+        blue_went_last = False
+    else:
+        move = update_switches(get_next_blue_move())
+        blue_went_last=True
+########
+
+
 
     if get_collision(P0, PF):
         tank0_x += 2*move_table_x[(tank0_angle + 8) & 0x0F]
@@ -286,9 +394,13 @@ while move != 'quit':
 
     if get_collision(M0, PF):
         fire0_busy = 0
+        # print "hi!"
+        # print last_shot,shot_dist
+        with open("data.txt", "a") as myfile:
+            myfile.write(str(last_shot[0])+" "+str(last_shot[1])+" "+str(last_shot[2])+" "+str(last_shot[3])+" "+str(last_shot[4])+" "+str(shot_dist)+"\n")
 
     if get_collision(M1, PF):
-        fire0_busy = 0
+        fire1_busy = 0
 
     # Game code ends here
     pygame.display.flip()
