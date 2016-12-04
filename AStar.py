@@ -27,40 +27,42 @@ def getAngle(a, b):
     if (diffx == 2 and diffy == 0):
         return 0
     elif (diffx == 2 and diffy == -1):
-        return 15
+        return 1
     elif (diffx == 2 and diffy == -2):
-        return 14   
+        return 2   
     elif (diffx == 1 and diffy == -2):
-        return 13
+        return 3
     elif (diffx == 0 and diffy == -2):
-        return 12
+        return 4
     elif (diffx == -1 and diffy == -2):
-        return 11   
+        return 5   
     elif (diffx == -2 and diffy == -2):
-        return 10
+        return 6
     elif (diffx == -2 and diffy == -1):
-        return 9
+        return 7
     elif (diffx == -2 and diffy == 0):
         return 8    
     elif (diffx == -2 and diffy == 1):
-        return 7
+        return 9
     elif (diffx == -2 and diffy == 2):
-        return 6
+        return 10
     elif (diffx == -1 and diffy == 2):
-        return 5   
+        return 11  
     elif (diffx == 0 and diffy == 2):
-        return 4
+        return 12
     elif (diffx == 1 and diffy == 2):
-        return 3
+        return 13
     elif (diffx == 2 and diffy == 2):
-        return 2   
+        return 14  
     elif (diffx == 2 and diffy == 1):
-        return 1    
+        return 15
+    print a, b
+    print diffx, diffy
     
 
 def a_star_search(graph, start, goal, facing):
     #How close to the target is acceptable
-    tolerance=3
+    #tolerance=3
     
     frontier = PriorityQueue()
     frontier.put((start,facing), 0)
@@ -76,8 +78,8 @@ def a_star_search(graph, start, goal, facing):
         
         if current == goal:
             break
-        if heuristic(goal,current)<tolerance:
-            break
+        #if heuristic(goal,current)<tolerance:
+        #    break
         
         for next in graph.neighbors(current):
             goDirection = getAngle(current, next)
@@ -95,7 +97,7 @@ def a_star_search(graph, start, goal, facing):
                 frontier.put((next, goDirection), priority)
                 came_from[next] = current
     
-    return came_from, cost_so_far
+    return reconstruct_path(came_from, start, goal)
     
 #Source: http://www.redblobgames.com/pathfinding/a-star/implementation.html End
     

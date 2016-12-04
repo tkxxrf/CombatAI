@@ -15,6 +15,7 @@ import math
 import time
 import random
 
+
 from pygame.locals import *
 
 ZOOM = 2
@@ -29,7 +30,7 @@ WINDOW_SIZE = (WINDOWWIDTH,WINDOWHEIGHT)
 PIXEL = SCALING * ZOOM 
 PF_PIXEL = 4* SCALING * ZOOM
 
-FRAME_RATE = 30
+FRAME_RATE = 20
 
 NUMBER_OF_OBJECTS = 6
 # bit xs for collison detection
@@ -249,9 +250,10 @@ def init_switches():
     """Set up key repeat."""
     pygame.key.set_repeat(100, 100)
 
-def update_switches():
+def update_switches(ai_input):
     """Tests returns quit, right, left, or fire."""
-    move_test = ''
+    # move_test = ''
+    move_test = ai_input
     event_test = pygame.event.poll()
     if event_test.type == pygame.QUIT:
         move_test = 'quit'
@@ -276,6 +278,7 @@ def update_switches():
             move_test = 'down1'                 
         if event_test.key == K_f:
             move_test = 'fire1'
+
 
 
 
