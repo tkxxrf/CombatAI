@@ -6,7 +6,7 @@ class SquareGrid:
     
     def in_bounds(self, id):
         (x, y) = id
-        return 0 <= x < self.width and 0 <= y < self.height
+        return 0 <= x < self.width and 8 <= y < self.height
     
     def passable(self, id):
         return id not in self.walls
