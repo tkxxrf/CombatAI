@@ -30,7 +30,7 @@ WINDOW_SIZE = (WINDOWWIDTH,WINDOWHEIGHT)
 PIXEL = SCALING * ZOOM 
 PF_PIXEL = 4* SCALING * ZOOM
 
-FRAME_RATE = 20
+FRAME_RATE = 30
 
 NUMBER_OF_OBJECTS = 6
 # bit xs for collison detection
@@ -250,25 +250,25 @@ def init_switches():
     """Set up key repeat."""
     pygame.key.set_repeat(100, 100)
 
-def update_switches(ai_input):
+def update_switches():
     """Tests returns quit, right, left, or fire."""
-    # move_test = ''
-    move_test = ai_input
+    move_test = ''
+    #move_test = ai_input
     event_test = pygame.event.poll()
     if event_test.type == pygame.QUIT:
         move_test = 'quit'
     if event_test.type == pygame.KEYDOWN:
         if event_test.key == K_RIGHT:
-            move_test = 'right0'
+            move_test = 'right1'
         if event_test.key == K_LEFT:
-            move_test = 'left0'
+            move_test = 'left1'
         if event_test.key == K_UP:
-            move_test = 'up0'
+            move_test = 'up1'
         if event_test.key == K_DOWN:
-            move_test = 'down0'                 
+            move_test = 'down1'                 
         if event_test.key == K_SPACE:
-            move_test = 'fire0'
-        if event_test.key == K_j:
+            move_test = 'fire1'
+        """if event_test.key == K_j:
             move_test = 'right1'
         if event_test.key == K_g:
             move_test = 'left1'
@@ -277,8 +277,7 @@ def update_switches(ai_input):
         if event_test.key == K_h:
             move_test = 'down1'                 
         if event_test.key == K_f:
-            move_test = 'fire1'
-
+            move_test = 'fire1' """
 
 
 
